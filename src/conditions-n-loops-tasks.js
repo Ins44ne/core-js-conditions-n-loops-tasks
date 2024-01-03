@@ -348,8 +348,52 @@ function getBalanceIndex(arr) {
  *          [10, 9,  8,  7]
  *        ]
  */
-function getSpiralMatrix(/* size */) {
-  throw new Error('Not implemented');
+function getSpiralMatrix(size) {
+  const matrix = [];
+  for (let i = 0; i < size; i += 1) {
+    matrix[i] = [];
+    for (let j = 0; j < size; j += 1) {
+      matrix[i][j] = 0;
+    }
+  }
+
+  let counter = 1;
+  let startRow = 0;
+  let endRow = size - 1;
+  let startCol = 0;
+  let endCol = size - 1;
+
+  while (startRow <= endRow && startCol <= endCol) {
+    for (let i = startCol; i <= endCol; i += 1) {
+      matrix[startRow][i] = counter;
+      counter += 1;
+    }
+    startRow += 1;
+
+    for (let i = startRow; i <= endRow; i += 1) {
+      matrix[i][endCol] = counter;
+      counter += 1;
+    }
+    endCol -= 1;
+
+    if (startRow <= endRow) {
+      for (let i = endCol; i >= startCol; i -= 1) {
+        matrix[endRow][i] = counter;
+        counter += 1;
+      }
+      endRow -= 1;
+    }
+
+    if (startCol <= endCol) {
+      for (let i = endRow; i >= startRow; i -= 1) {
+        matrix[i][startCol] = counter;
+        counter += 1;
+      }
+      startCol += 1;
+    }
+  }
+
+  return matrix;
 }
 
 /**
@@ -404,25 +448,28 @@ function rotateMatrix(matrix) {
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
 function sortByAsc(arr) {
-  const myArr = arr;
-  let minNumber = 0;
-  let j = 0;
-  let sorted;
+  const copyArr = arr;
+  const rotate = arr[arr.length - 1];
+  const left = [];
+  const right = [];
 
-  do {
-    sorted = false;
+  if (arr.length < 1) {
+    return arr;
+  }
 
-    for (let i = 0; i < myArr.length; i += 1) {
-      j = i + 1;
-      if (myArr[i] > myArr[j]) {
-        minNumber = myArr[j];
-        myArr[j] = myArr[i];
-        myArr[i] = minNumber;
-        sorted = true;
-      }
+  for (let i = 0; i < arr.length - 1; i += 1) {
+    if (arr[i] < rotate) {
+      left[left.length] = arr[i];
+    } else {
+      right[right.length] = arr[i];
     }
-  } while (sorted);
-  return myArr;
+  }
+  const sortedArr = [...sortByAsc(left), rotate, ...sortByAsc(right)];
+
+  for (let i = 0; i < arr.length; i += 1) {
+    copyArr[i] = sortedArr[i];
+  }
+  return copyArr;
 }
 
 /**
@@ -442,8 +489,27 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  const storage = {};
+  let times = iterations;
+  let newString = str;
+  while (times > 0) {
+    if (storage[newString]) {
+      newString = storage[newString];
+    } else {
+      let newStringShuffled = '';
+      for (let i = 0; i < newString.length; i += 2) {
+        newStringShuffled += newString[i];
+      }
+      for (let i = 1; i < newString.length; i += 2) {
+        newStringShuffled += newString[i];
+      }
+      storage[newString] = newStringShuffled;
+      newString = newStringShuffled;
+    }
+    times -= 1;
+  }
+  return newString;
 }
 
 /**
@@ -463,8 +529,50 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const newArr = Array.from(String(number), Number);
+
+  let i = newArr.length - 2;
+
+  while (i >= 0 && newArr[i] >= newArr[i + 1]) {
+    i -= 1;
+  }
+
+  if (i < 0) {
+    return number;
+  }
+
+  let j = newArr.length - 1;
+
+  while (newArr[j] <= newArr[i]) {
+    j -= 1;
+  }
+
+  [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+
+  const leftArr = [];
+
+  for (let k = 0; k <= i; k += 1) {
+    leftArr[k] = newArr[k];
+  }
+
+  let rightArr = [];
+
+  for (let l = i + 1; l < newArr.length; l += 1) {
+    rightArr[rightArr.length] = newArr[l];
+  }
+
+  rightArr = rightArr.sort((a, b) => a - b);
+
+  const resArr = [...leftArr, ...rightArr];
+
+  let res = 0;
+
+  for (i = 0; i < resArr.length; i += 1) {
+    res = res * 10 + resArr[i];
+  }
+
+  return res;
 }
 
 module.exports = {
